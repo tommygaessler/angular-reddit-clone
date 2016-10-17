@@ -21,20 +21,60 @@
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
-              <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add Post</a></li>
+              <li><a href="#" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-plus"></span> Add Post</a></li>
             </ul>
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <form ng-submit="reddit.post()" name="form">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      <h4 class="modal-title" id="myModalLabel">Add Post</h4>
+                    </div>
+                    <div class="modal-body">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <label for="title">Title</label>
+                            <input type="text" class="form-control" id="title" ng-model="reddit.title" name="title">
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="form-group">
+                            <label for="author">Author</label>
+                            <input type="text" class="form-control" id="author" ng-model="reddit.author" name="author">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="image">Image URL</label>
+                        <input type="url" class="form-control" id="image" ng-model="reddit.image" name="image">
+                      </div>
+                      <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control" rows="3" id="description" ng-model="reddit.description" name="description"></textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Post</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
             <form class="navbar-form navbar-left">
               <div class="form-group">
-                <input type="text" class="form-control" placeholder="Search">
+                <input type="text" class="form-control" placeholder="Search" ng-model="search">
               </div>
             </form>
             <ul class="nav navbar-nav">
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By <span class="caret"></span></a>
                 <ul class="dropdown-menu">
-                  <li><a href="#">Up Votes</a></li>
-                  <li><a href="#">Date</a></li>
-                  <li><a href="#">Title</a></li>
+                  <li><a href="#" ng-model="reddit.sort" ng-click="reddit.sort='-votes'">Up Votes</a></li>
+                  <li><a href="#" ng-model="reddit.sort" ng-click="reddit.sort='-date_posted'">Date</a></li>
+                  <li><a href="#" ng-model="reddit.sort" ng-click="reddit.sort='title'">Title</a></li>
                 </ul>
               </li>
             </ul>
@@ -43,7 +83,7 @@
       </nav>
     </header>
     <main class="container-fluid">
-      <div class="well well-lg" ng-repeat="post in reddit.posts">
+      <div class="well well-lg" ng-repeat="post in reddit.posts | orderBy:reddit.sort | filter:search">
         <div class="row">
           <div class="col-sm-2">
             <img class="img-responsive" ng-src="{{ post.image }}" alt="" />
@@ -52,15 +92,15 @@
             <h2>{{ post.title }}</h2>
 
             <h2 class="pull-right">
-              <span class="glyphicon glyphicon-thumbs-up"></span>
+              <span class="glyphicon glyphicon-thumbs-up" ng-click="reddit.upVote(post)"></span>
               {{ post.votes }}
-              <span class="glyphicon glyphicon-thumbs-down"></span>
+              <span class="glyphicon glyphicon-thumbs-down" ng-click="reddit.downVote(post)"></span>
             </h2>
 
             <p>{{ post.author }}</p>
             <p>{{ post.description }}</p>
 
-            <h4><span class="glyphicon glyphicon-calendar"></span> {{ post.date_posted }}</h4>
+            <h4><span class="glyphicon glyphicon-calendar"></span> <time am-time-ago="post.date_posted" title="{{ post.date_posted | amDateFormat: 'dddd, MMMM Do YYYY, h:mm a' }}"></time></h4>
 
             <h4 ng-click="toggleComments = !toggleComments">
               <span class="glyphicon glyphicon-comment"></span>
@@ -75,23 +115,23 @@
 
             <h4 ng-click="addComment = !addComment"><span class="glyphicon glyphicon-pencil"></span> Add Comment</h4>
 
-            <form ng-show="addComment">
+            <form ng-show="addComment" ng-submit="reddit.postComment(post)" name="form">
               <div class="row">
                 <div class="form-group col-sm-3">
                   <label for="name">Name</label>
-                  <input type="name" class="form-control" id="name">
+                  <input type="text" class="form-control" id="name" ng-model="reddit.name" name="name">
                 </div>
                 <div class="form-group col-sm-6">
                   <label for="comment">Comment</label>
-                  <input type="comment" class="form-control" id="comment">
+                  <input type="text" class="form-control" id="comment" ng-model="reddit.comment" name="comment">
                 </div>
                 <div class="form-group col-sm-3">
-                  <button type="button" class="btn btn-success btn-block">Comment</button>
+                  <button type="submit" class="btn btn-success btn-block" id="add-comment" ng-click="addComment = false; toggleComments = true">Comment</button>
                 </div>
               </div>
             </form>
 
-            <blockquote ng-show="toggleComments" ng-repeat="comment in post.comments">
+            <blockquote ng-show="toggleComments" ng-repeat="comment in post.comments | reverse">
               <p>{{ comment.comment }}</p>
               <footer>{{ comment.author }}</footer>
             </blockquote>
@@ -99,18 +139,10 @@
           </div>
         </div>
       </div>
-
-
-
-
-
-
-
-
-
-
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.10/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-moment/0.9.0/angular-moment.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="app.js"></script>
