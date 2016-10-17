@@ -25,6 +25,11 @@
         total_comments: 0,
         comments: []
       });
+
+      this.title = '';
+      this.image = '';
+      this.author = '';
+      this.description = '';
     }
 
     this.postComment = function(post) {
@@ -45,12 +50,6 @@
     this.downVote = function(post) {
       post.votes--;
     }
-
-
-
-
-
-
 
     this.posts = [
       {
@@ -84,6 +83,10 @@
         ]
       }
     ];
+  });
+
+  $('#close').on('click', function() {
+    $('#myModal').modal('hide');
   });
 
 }());
