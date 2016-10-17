@@ -3,10 +3,116 @@
   <head>
     <meta charset="utf-8">
     <title>Angular Reddit Clone</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/darkly/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
   </head>
-  <body>
+  <body ng-controller="redditController as reddit">
+    <header>
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Reddit Clone</a>
+          </div>
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+              <li><a href="#"><span class="glyphicon glyphicon-plus"></span> Add Post</a></li>
+            </ul>
+            <form class="navbar-form navbar-left">
+              <div class="form-group">
+                <input type="text" class="form-control" placeholder="Search">
+              </div>
+            </form>
+            <ul class="nav navbar-nav">
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Up Votes</a></li>
+                  <li><a href="#">Date</a></li>
+                  <li><a href="#">Title</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+    <main class="container-fluid">
+      <div class="well well-lg" ng-repeat="post in reddit.posts">
+        <div class="row">
+          <div class="col-sm-2">
+            <img class="img-responsive" ng-src="{{ post.image }}" alt="" />
+          </div>
+          <div class="col-sm-10">
+            <h2>{{ post.title }}</h2>
+
+            <h2 class="pull-right">
+              <span class="glyphicon glyphicon-thumbs-up"></span>
+              {{ post.votes }}
+              <span class="glyphicon glyphicon-thumbs-down"></span>
+            </h2>
+
+            <p>{{ post.author }}</p>
+            <p>{{ post.description }}</p>
+
+            <h4><span class="glyphicon glyphicon-calendar"></span> {{ post.date_posted }}</h4>
+
+            <h4 ng-click="toggleComments = !toggleComments">
+              <span class="glyphicon glyphicon-comment"></span>
+              <ng-pluralize count="post.total_comments"
+                when="{
+                  '0': 'No Comments',
+                  'one': '1 Comment',
+                  'other': '{} Comments'
+                }">
+              </ng-pluralize>
+            </h4>
+
+            <h4 ng-click="addComment = !addComment"><span class="glyphicon glyphicon-pencil"></span> Add Comment</h4>
+
+            <form ng-show="addComment">
+              <div class="row">
+                <div class="form-group col-sm-3">
+                  <label for="name">Name</label>
+                  <input type="name" class="form-control" id="name">
+                </div>
+                <div class="form-group col-sm-6">
+                  <label for="comment">Comment</label>
+                  <input type="comment" class="form-control" id="comment">
+                </div>
+                <div class="form-group col-sm-3">
+                  <button type="button" class="btn btn-success btn-block">Comment</button>
+                </div>
+              </div>
+            </form>
+
+            <blockquote ng-show="toggleComments" ng-repeat="comment in post.comments">
+              <p>{{ comment.comment }}</p>
+              <footer>{{ comment.author }}</footer>
+            </blockquote>
+
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+
+
+
+
+
+    </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.10/angular.min.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="app.js"></script>
     <script src="controllers.js"></script>
   </body>
